@@ -1,0 +1,226 @@
+<?xml version='1.0' encoding='ISO-8859-1'?>
+
+
+<pomdpx version='0.1' id='pursuit_evasion' xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' xsi:noNamespaceSchemaLocation='pomdpx.xsd'>
+
+
+    <Description>test files</Description>
+    <Discount>0.95</Discount>		  
+
+    <Variable>
+
+        <StateVar vnamePrev="robot0" vnameCurr="robot1" fullyObs="true">
+            <ValueEnum>b0 b1 b2 b3</ValueEnum>
+        </StateVar>
+        <StateVar vnamePrev="target0" vnameCurr="target1" fullyObs="false">
+            <ValueEnum>c0 c1 c2 </ValueEnum>
+        </StateVar>
+
+        <ObsVar vname="obs_sensor">
+            <ValueEnum>o0 o1</ValueEnum>
+        </ObsVar>
+
+        <ActionVar vname="action_robot">
+            <ValueEnum>a0 a1 a2 a3</ValueEnum>
+        </ActionVar>
+
+        <RewardVar vname="reward_robot"/>
+    </Variable>
+
+
+    <InitialStateBelief>
+        <CondProb>
+            <Var>robot0</Var>
+            <Parent>null</Parent>
+            <Parameter type = "TBL">
+                <Entry>
+                    <Instance>-</Instance>
+                    <ProbTable>0 1 0 0</ProbTable>
+                </Entry>
+            </Parameter>
+        </CondProb>
+        <CondProb>
+            <Var>target0</Var>
+            <Parent>null</Parent>
+            <Parameter type = "TBL">
+                <Entry>
+                    <Instance>-</Instance>
+                    <ProbTable>uniform</ProbTable>
+                </Entry>
+            </Parameter>
+        </CondProb>
+    </InitialStateBelief>
+
+    <StateTransitionFunction>
+        <CondProb>
+            <Var>robot1</Var>
+            <Parent>action_robot robot0</Parent>
+            <Parameter type = "TBL">
+                <Entry>
+                    <Instance>a0 * -</Instance>
+                    <ProbTable>1 0 0 0</ProbTable>
+                </Entry>
+                <Entry>
+                    <Instance>a1 * -</Instance>
+                    <ProbTable>0 1 0 0</ProbTable>
+                </Entry>
+                <Entry>
+                    <Instance>a2 * -</Instance>
+                    <ProbTable>0 0 1 0</ProbTable>
+                </Entry>
+                <Entry>
+                    <Instance>a3 * -</Instance>
+                    <ProbTable>0 0 0 1</ProbTable>
+                </Entry>
+            </Parameter>
+        </CondProb>
+        <CondProb>
+            <Var>target1</Var>
+            <Parent>action_robot robot0 target0</Parent>
+            <Parameter type="TBL">
+                <Entry>
+                    <Instance>* b0 c0 -</Instance>
+                    <ProbTable>1 0 0</ProbTable>
+                </Entry>
+                <Entry>
+                    <Instance>* b1 c0 -</Instance>
+                    <ProbTable>1 0 0</ProbTable>
+                </Entry>
+                <Entry>
+                    <Instance>* b2 c0 -</Instance>
+                    <ProbTable>0.5 0.5 0</ProbTable>
+                </Entry>
+                <Entry>
+                    <Instance>* b3 c0 -</Instance>
+                    <ProbTable>0.5 0.5 0</ProbTable>
+                </Entry>
+                <Entry>
+                    <Instance>* * c1 -</Instance>
+                    <ProbTable>0 1 0</ProbTable>
+                </Entry>
+                <Entry>
+                    <Instance>* b0 c2 -</Instance>
+                    <ProbTable>0 0.5 0.5</ProbTable>
+                </Entry>
+                <Entry>
+                    <Instance>* b1 c2 -</Instance>
+                    <ProbTable>0 0.5 0.5</ProbTable>
+                </Entry>
+                <Entry>
+                    <Instance>* b2 c2 -</Instance>
+                    <ProbTable>0 0 1</ProbTable>
+                </Entry>
+                <Entry>
+                    <Instance>* b3 c2 -</Instance>
+                    <ProbTable>0 0 1</ProbTable>
+                </Entry>
+            </Parameter>
+        </CondProb>
+    </StateTransitionFunction>
+
+    <ObsFunction>
+        <CondProb>
+            <Var>obs_sensor</Var>
+            <Parent>action_robot robot1 target1</Parent>
+            <Parameter type = "TBL">
+                <Entry>
+                    <Instance>* - c0 o0</Instance>
+                    <ProbTable>0 0 1 1</ProbTable>
+                </Entry>
+                <Entry>
+                    <Instance>* - c0 o1</Instance>
+                    <ProbTable>1 1 0 0</ProbTable>
+                </Entry>
+                <Entry>
+                    <Instance>* * c1 o0</Instance>
+                    <ProbTable>0</ProbTable>
+                </Entry>
+                <Entry>
+                    <Instance>* * c1 o1</Instance>
+                    <ProbTable>1</ProbTable>
+                </Entry>
+                <Entry>
+                    <Instance>* - c2 o0</Instance>
+                    <ProbTable>1 1 0 0</ProbTable>
+                </Entry>
+                <Entry>
+                    <Instance>* - c2 o1</Instance>
+                    <ProbTable>0 0 1 1</ProbTable>
+                </Entry>
+            </Parameter>
+        </CondProb>
+    </ObsFunction>
+
+    <RewardFunction>
+        <Func>
+            <Var>reward_robot</Var>
+            <Parent>action_robot robot0 target0</Parent>
+            <Parameter type = "TBL">
+                <Entry>
+                    <Instance>a0 b0 -</Instance>
+                    <ValueTable>10 10 0</ValueTable>
+                </Entry>
+                <Entry>
+                    <Instance>a0 b1 -</Instance>
+                    <ValueTable>10 10 0</ValueTable>
+                </Entry>
+                <Entry>
+                    <Instance>a0 b2 *</Instance>
+                    <ValueTable>-100</ValueTable>
+                </Entry>
+                <Entry>
+                    <Instance>a0 b3 *</Instance>
+                    <ValueTable>-100</ValueTable>
+                </Entry>
+                <Entry>
+                    <Instance>a1 b0 -</Instance>
+                    <ValueTable>10 10 0</ValueTable>
+                </Entry>
+                <Entry>
+                    <Instance>a1 b1 -</Instance>
+                    <ValueTable>10 10 0</ValueTable>
+                </Entry>
+                <Entry>
+                    <Instance>a1 b2 -</Instance>
+                    <ValueTable>10 10 0</ValueTable>
+                </Entry>
+                <Entry>
+                    <Instance>a1 b3 *</Instance>
+                    <ValueTable>-100</ValueTable>
+                </Entry>
+                <Entry>
+                    <Instance>a2 b0 *</Instance>
+                    <ValueTable>-100</ValueTable>
+                </Entry>
+                <Entry>
+                    <Instance>a2 b1 -</Instance>
+                    <ValueTable>0 10 10</ValueTable>
+                </Entry>
+                <Entry>
+                    <Instance>a2 b2 -</Instance>
+                    <ValueTable>0 10 10</ValueTable>
+                </Entry>
+                <Entry>
+                    <Instance>a2 b3 -</Instance>
+                    <ValueTable>0 10 10</ValueTable>
+                </Entry>
+                <Entry>
+                    <Instance>a3 b0 *</Instance>
+                    <ValueTable>-100</ValueTable>
+                </Entry>
+                <Entry>
+                    <Instance>a3 b1 *</Instance>
+                    <ValueTable>-100</ValueTable>
+                </Entry>
+                <Entry>
+                    <Instance>a3 b2 -</Instance>
+                    <ValueTable>0 10 10</ValueTable>
+                </Entry>
+                <Entry>
+                    <Instance>a3 b3 -</Instance>
+                    <ValueTable>0 10 10</ValueTable>
+                </Entry>
+            </Parameter>
+        </Func>
+    </RewardFunction>
+</pomdpx>
